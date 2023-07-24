@@ -8,7 +8,7 @@ const clickHandler = (event)=>{
     const ti = document.getElementById('title').value;
     const ot = document.getElementById('openingtext').value;
     const de = document.getElementById('date').value;
-    console.log({Tittle: ti, OpeningText: ot, ReleaseDate: de});
+    props.onAddMovie({tittle: ti, openingText: ot, releaseDate: de});
 }
 
 return (
