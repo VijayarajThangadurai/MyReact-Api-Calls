@@ -11,7 +11,7 @@ function App() {
   const isCancelled = useRef(false);
   const [visibleButton, setVisibleBtn]= useState();
 
-  const fetchMoviesHandler=(event)=>{
+  const fetchMoviesHandler=useCallback(async()=>{
     console.log(isCancelled);
    if(isCancelled.current){
     setError("Please try again late.");
@@ -41,18 +41,20 @@ function App() {
   setVisibleBtn(true);
   setTimeout(()=>{
     fetchMoviesHandler();
-    },5000)
+    },5000);
  }
-  setIsLoading(false);
 }
-}
+setIsLoading(false);
+},[]);
+
 useEffect(()=>{
-  setTimeout(()=>{
-    if(retryCount>0){
-      fetchMoviesHandler();
-    }
-  },5000)
-}, [retryCount]);
+  fetchMoviesHandler();
+}, [fetchMoviesHandler]);
+const cancelRetryHandler=(event)=>{
+  console.log(isCancelled);
+  isCancelled.current=true;
+  setVisibleBtn(false);
+};
 let content =<p>{error}</p>
 if (movies.length > 0){
   content = <MoviesList movies={movies}/>;
@@ -63,25 +65,16 @@ if(error){
 if(isLoading){
   content = <p>Loading...</p>;
 }
-if(isCancelled && error){
-  content = <p>{error}</p>;
-}
+
   return (
     <React.Fragment>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
-      {/* { isClicked && <section>
-        {!isLoading && movies.length>0 && <MoviesList movies={movies}/>}
-        {!isLoading && movies.length===0 && <p>Found no movies</p>}
-        {isLoading && <p>Loading...</p>}
-      </section>} */}
-      {isClicked && (
-        <section>
+         <section>
           {content}
-          {error && !isCancelled && <button onClick={cancelRetryHandler}>Cancel Retry</button>}
+          {visibleButton && <button onClick={cancelRetryHandler}>Cancel Retry</button>}
         </section>
-      )}
     </React.Fragment>
   );
 }
